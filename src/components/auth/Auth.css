@@ -1,12 +1,25 @@
+/* Auth Container */
 .auth-container {
-  max-width: 400px;
+  max-width: 450px;
   margin: 4rem auto;
+  padding: 0 1rem;
+}
+
+.register-container {
+  max-width: 450px;
+  margin: 4rem auto;
+  padding: 0 1rem;
 }
 
 .auth-card {
-  padding: 2rem;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  background: var(--card-bg);
+  border: 1px solid #f3f4f6;
 }
 
+/* Auth Form */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -20,19 +33,174 @@
 }
 
 .form-group label {
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
+.form-group input {
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+  transform: translateY(-2px);
+}
+
+.form-group input::placeholder {
+  color: #9ca3af;
+}
+
+/* Auth Buttons */
+.auth-form .btn {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.auth-form .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(109, 40, 217, 0.3);
+}
+
+/* Register Form Styles */
+.register-container h2 {
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.register-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f3f4f6;
+}
+
+.register-container input {
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+.register-container input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+  transform: translateY(-2px);
+}
+
+.register-container input::placeholder {
+  color: #9ca3af;
+}
+
+.register-container button {
+  padding: 1rem 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.register-container button:hover {
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(109, 40, 217, 0.3);
+}
+
+/* Message Styles */
+.auth-message {
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  font-weight: 500;
+  text-align: center;
+}
+
+.auth-message.error {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.auth-message.success {
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+/* Auth Links */
 .auth-links {
   margin-top: 1.5rem;
   text-align: center;
+  color: #6b7280;
 }
 
 .auth-links a {
   color: var(--primary-color);
   text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
 .auth-links a:hover {
+  color: var(--secondary-color);
   text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .auth-container,
+  .register-container {
+    margin: 2rem auto;
+    padding: 0 0.5rem;
+  }
+
+  .auth-card,
+  .register-container form {
+    padding: 1.5rem;
+  }
+
+  .register-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group input,
+  .register-container input {
+    padding: 0.75rem;
+  }
+
+  .auth-form .btn,
+  .register-container button {
+    padding: 0.875rem 1.25rem;
+  }
 }

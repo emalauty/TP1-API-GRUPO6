@@ -6,6 +6,7 @@ import Home from './components/home/Home';
 import ProductList from './components/products/ProductList';
 import Cart from './components/cart/Cart';
 import Login from './components/auth/Login';
+import Register from './components/auth/Register';
 import './App.css';
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
               <Route path="/products" element={<ProductList />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
             </Routes>
           </main>
         </div>
