@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductList from '../products/ProductList';
-import CategoryList from '../categories/CategoryList';
+import CategoryList from '../products/CategoryList';
 import './Home.css';
 
 export default function Home() {
