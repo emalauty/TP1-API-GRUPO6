@@ -34,8 +34,13 @@ export default function ProductDetail() {
     loadProduct();
   }, [id]);
 
+
+  const currentQuantity = getItemQuantity(product?.id);
+  const maxReached = currentQuantity >= product?.stock;
+
   const handleAddToCart = () => {
-    if (product.stock > 0) {
+    if (product.stock > 0 && !maxReached) {
+
       addToCart(product);
     }
   };
@@ -69,9 +74,11 @@ export default function ProductDetail() {
               <button
                 className="btn btn-add-more"
                 onClick={handleAddToCart}
-                disabled={product.stock === 0}
+
+                disabled={product.stock === 0 || maxReached}
               >
-                Agregar más
+                {maxReached ? 'Máximo de stock' : 'Agregar más'}
+
               </button>
             </div>
           ) : (

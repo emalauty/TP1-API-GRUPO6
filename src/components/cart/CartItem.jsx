@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../../context/CartContext';
 
 export default function CartItem({ item, isCheckingOut }) {
   const { removeFromCart, updateQuantity } = useCart();
@@ -16,7 +16,7 @@ export default function CartItem({ item, isCheckingOut }) {
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity < 1) {
       removeFromCart(item.id);
-    } else {
+    } else if (newQuantity <= item.stock) {
       updateQuantity(item.id, newQuantity);
     }
   };
@@ -49,10 +49,10 @@ export default function CartItem({ item, isCheckingOut }) {
           <button 
             className="quantity-btn"
             onClick={() => handleQuantityChange(item.quantity + 1)}
-            disabled={isCheckingOut}
+            disabled={isCheckingOut || item.quantity >= item.stock}
             aria-label="Aumentar cantidad"
           >
-            +
+            {item.quantity >= item.stock ? 'Máx' : '+'}
           </button>
         </div>
 
