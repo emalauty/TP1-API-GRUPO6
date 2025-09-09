@@ -1,7 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../../../context/CartContext';
 
 export default function Header() {
+  const { totalItems } = useCart();
+
   return (
     <header className="header">
       <div className="container">
@@ -15,7 +18,12 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
-          <Link to="/cart" className="btn">🛒 Carrito</Link>
+          <Link to="/cart" className="btn cart-btn">
+            🛒 Carrito
+            {totalItems > 0 && (
+              <span className="cart-badge">{totalItems}</span>
+            )}
+          </Link>
           <Link to="/login" className="btn">👤 Login</Link>
         </div>
       </div>
