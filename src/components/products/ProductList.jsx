@@ -1,16 +1,20 @@
+// src/components/products/ProductList.jsx
 import React, { useState, useEffect } from 'react';
 import { productService } from '../../asynmock';
-import { useCart } from '../../../context/CartContext';
+import { Link } from 'react-router-dom';
 import './Products.css';
 
-export default function ProductList() {
+export default function ProductList({ sort, selectedCategory: selectedCategoryProp }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  
-  const { addToCart, isInCart, getItemQuantity } = useCart();
+  const [selectedCategory, setSelectedCategory] = useState(selectedCategoryProp || '');
+
+  // 🔹 Sincronizamos categoría seleccionada desde Home
+  useEffect(() => {
+    setSelectedCategory(selectedCategoryProp);
+  }, [selectedCategoryProp]);
 
   useEffect(() => {
     loadProducts();
@@ -28,7 +32,12 @@ export default function ProductList() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const data = await productService.getProducts();
+      let data = await productService.getProducts();
+
+      if (sort === 'alpha') {
+        data = data.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
       setProducts(data);
     } catch (err) {
       setError('Error cargando productos');
@@ -50,7 +59,12 @@ export default function ProductList() {
   const loadProductsByCategory = async (category) => {
     try {
       setLoading(true);
-      const data = await productService.getProductsByCategory(category);
+      let data = await productService.getProductsByCategory(category);
+
+      if (sort === 'alpha') {
+        data = data.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
       setProducts(data);
     } catch (err) {
       setError('Error cargando productos por categoría');
@@ -60,18 +74,8 @@ export default function ProductList() {
     }
   };
 
-  const handleAddToCart = (product) => {
-    if (product.stock > 0) {
-      addToCart(product);
-    }
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS'
-    }).format(price);
-  };
+  const formatPrice = (price) =>
+    new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
 
   if (loading) return <div className="loading">⚡ Cargando productos gaming...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -80,16 +84,15 @@ export default function ProductList() {
     <div className="products container">
       <div className="products-header">
         <h2 className="section-title">Productos Gaming</h2>
-        
-        {/* Filtro por categorías */}
+
         <div className="category-filter">
-          <select 
-            value={selectedCategory} 
+          <select
+            value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="category-select"
           >
             <option value="">Todas las categorías</option>
-            {categories.map(category => (
+            {categories.map((category) => (
               <option key={category} value={category}>
                 {category}
               </option>
@@ -98,62 +101,37 @@ export default function ProductList() {
         </div>
       </div>
 
-      {/* Grid de productos */}
       <div className="products-grid">
-        {products.map(product => (
+        {products.map((product) => (
           <div key={product.id} className="card product-card">
             <div className="product-image-container">
-              <img 
-                src={product.image} 
-                alt={product.name}
-                className="product-img"
-              />
-              {product.stock === 0 && (
-                <div className="out-of-stock-overlay">
-                  Sin Stock
-                </div>
-              )}
+              <Link to={`/products/${product.id}`}>
+                <img src={product.image} alt={product.name} className="product-img" />
+              </Link>
+              {product.stock === 0 && <div className="out-of-stock-overlay">Sin Stock</div>}
             </div>
-            
+
             <div className="product-info">
               <span className="product-category">{product.category}</span>
-              <h3 className="product-name">{product.name}</h3>
+              <h3 className="product-name">
+                <Link to={`/products/${product.id}`} className="product-name-link">
+                  {product.name}
+                </Link>
+              </h3>
               <p className="product-description">{product.description}</p>
-              
+
               <div className="product-details">
                 <p className="product-stock">
-                  {product.stock > 0 ? (
-                    <>Stock: {product.stock} disponibles</>
-                  ) : (
-                    <span className="no-stock">Sin stock</span>
-                  )}
+                  {product.stock > 0 ? `Stock: ${product.stock} disponibles` : 'Sin stock'}
                 </p>
                 <p className="product-price">{formatPrice(product.price)}</p>
               </div>
 
+              {/* 🔹 Nuevo botón: Ver detalle */}
               <div className="product-actions">
-                {isInCart(product.id) ? (
-                  <div className="in-cart-indicator">
-                    <span className="in-cart-text">
-                      ✅ En carrito ({getItemQuantity(product.id)})
-                    </span>
-                    <button 
-                      className="btn btn-add-more"
-                      onClick={() => handleAddToCart(product)}
-                      disabled={product.stock === 0}
-                    >
-                      Agregar más
-                    </button>
-                  </div>
-                ) : (
-                  <button 
-                    className={`btn ${product.stock === 0 ? 'btn-disabled' : 'btn-primary'}`}
-                    onClick={() => handleAddToCart(product)}
-                    disabled={product.stock === 0}
-                  >
-                    {product.stock === 0 ? 'Sin Stock' : 'Agregar al Carrito'}
-                  </button>
-                )}
+                <Link to={`/products/${product.id}`} className="btn btn-primary">
+                  Ver Detalle
+                </Link>
               </div>
             </div>
           </div>
