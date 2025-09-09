@@ -26,14 +26,17 @@ const cartReducer = (state, action) => {
       
       if (existingItemIndex >= 0) {
         // Si el producto ya existe, actualizar la cantidad
-        updatedItems = state.items.map((item, index) => 
-          index === existingItemIndex 
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+          updatedItems = state.items.map((item, index) => 
+            index === existingItemIndex 
+              ? { 
+                  ...item, 
+                  quantity: Math.min(item.quantity + quantity, item.stock) // Limitar por stock
+                }
+              : item
+          );
       } else {
         // Si es un producto nuevo, agregarlo al carrito
-        updatedItems = [...state.items, { ...product, quantity }];
+          updatedItems = [...state.items, { ...product, quantity: Math.min(quantity, product.stock) }];
       }
       
       const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
