@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { productService } from '../../asynmock';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../../context/CartContext';
 import './Products.css';
 
 export default function ProductList() {
