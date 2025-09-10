@@ -1,6 +1,6 @@
 import React from 'react';
 import './Cart.css';
-import { useCart } from '../../../context/CartContext';
+import { useCart } from '../../context/CartContext';
 import CartItem from './CartItem';
 
 export default function Cart() {
