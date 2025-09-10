@@ -1,10 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import './Layout.css';
 
 export default function Header() {
   const { totalItems } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header className="header">
@@ -25,7 +31,19 @@ export default function Header() {
               <span className="cart-badge">{totalItems}</span>
             )}
           </Link>
-          <Link to="/login" className="btn">👤 Login</Link>
+          
+          {isAuthenticated ? (
+            <div className="user-menu">
+              <Link to="/profile" className="user-greeting">
+                👤 Hola, {user?.username || user?.name || user?.email}
+              </Link>
+              <button onClick={handleLogout} className="btn btn-logout">
+                Cerrar Sesión
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="btn">👤 Login</Link>
+          )}
         </div>
       </div>
     </header>

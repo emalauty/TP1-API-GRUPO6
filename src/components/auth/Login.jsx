@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
 
 export default function Login() {
@@ -7,6 +8,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -16,23 +18,25 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setSuccess("");
+    
     if (!form.email || !form.password) {
       setError("Completa ambos campos.");
       return;
     }
+
     try {
-      const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(form.email)}&password=${encodeURIComponent(form.password)}`);
-      const users = await res.json();
-      console.log("Usuarios encontrados:", users);
-      if (users.length > 0) {
-        console.log("Login exitoso, redirigiendo...");
+      const result = await login(form.email, form.password);
+      
+      if (result.success) {
         setSuccess("Login exitoso.");
+        console.log("Usuario autenticado:", result.user);
         navigate("/");
       } else {
-        setError("Email o contraseña incorrectos.");
+        setError(result.error);
       }
-    } catch {
-      setError("No se pudo conectar al servidor.");
+    } catch (error) {
+      setError("Error inesperado. Intenta nuevamente.");
+      console.error("Error en login:", error);
     }
   };
 
@@ -65,8 +69,8 @@ export default function Login() {
               onChange={handleChange}
             />
           </div>
-          <button type="submit" className="btn btn-primary">
-            Ingresar
+          <button type="submit" className="btn btn-primary" disabled={isLoading}>
+            {isLoading ? 'Ingresando...' : 'Ingresar'}
           </button>
         </form>
         {error && <p className="auth-message error">{error}</p>}
