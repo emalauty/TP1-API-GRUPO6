@@ -1,12 +1,13 @@
 // src/components/products/ProductDetail.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { productService } from '../../asynmock';
 import { useCart } from '../../../context/CartContext';
-import './Products.css';
+import './ProductDetail.css';
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,7 +18,7 @@ export default function ProductDetail() {
     const loadProduct = async () => {
       try {
         setLoading(true);
-        const data = await productService.getProducts(); // Traemos todos
+        const data = await productService.getProducts();
         const found = data.find((p) => p.id === parseInt(id));
         if (!found) {
           setError('Producto no encontrado');
@@ -45,6 +46,10 @@ export default function ProductDetail() {
     }
   };
 
+  const handleRemoveFromCart = () => {
+    addToCart(product, -1);
+  };
+
   const formatPrice = (price) =>
     new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
 
@@ -63,23 +68,36 @@ export default function ProductDetail() {
           <h2>{product.name}</h2>
           <p className="product-detail-category">{product.category}</p>
           <p className="product-detail-description">{product.description}</p>
-          <p className="product-detail-stock">
+          <p className={`product-detail-stock ${product.stock === 0 ? 'no-stock' : ''}`}>
             {product.stock > 0 ? `Stock: ${product.stock}` : 'Sin stock'}
           </p>
           <p className="product-detail-price">{formatPrice(product.price)}</p>
 
           {isInCart(product.id) ? (
-            <div>
-              <span>✅ En carrito ({getItemQuantity(product.id)})</span>
-              <button
-                className="btn btn-add-more"
-                onClick={handleAddToCart}
-
-                disabled={product.stock === 0 || maxReached}
-              >
-                {maxReached ? 'Máximo de stock' : 'Agregar más'}
-
-              </button>
+            <div className="cart-actions">
+              <div className="quantity-control">
+                <button
+                  className="btn btn-quantity"
+                  onClick={handleRemoveFromCart}
+                  disabled={getItemQuantity(product.id) <= 1}
+                >
+                  -
+                </button>
+                <span className="quantity">{getItemQuantity(product.id)}</span>
+                <button
+                  className="btn btn-quantity"
+                  onClick={handleAddToCart}
+                  disabled={getItemQuantity(product.id) >= product.stock}
+                >
+                  +
+                </button>
+              </div>
+              <div className="cart-info">
+                <span>{getItemQuantity(product.id)} productos agregados</span>
+                <button className="btn btn-primary" onClick={() => navigate('/cart')}>
+                  Ver carrito
+                </button>
+              </div>
             </div>
           ) : (
             <button

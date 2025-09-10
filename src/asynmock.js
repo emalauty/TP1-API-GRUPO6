@@ -43,7 +43,7 @@ const products = [
     description: "Procesador de 16 núcleos y 32 hilos, perfecto para gaming y creación de contenido",
     price: 699900,
     stock: 3,
-    image: "https://images.unsplash.com/photo-1555617778-03ad29d7b8ca?w=400&h=300&fit=crop"
+    image: "https://www.amd.com/content/dam/amd/en/images/products/processors/ryzen/2505503-ryzen-9-7900x.jpg"
   },
   {
     id: 6,
@@ -52,7 +52,7 @@ const products = [
     description: "Motherboard gaming con soporte DDR5, PCIe 5.0 y conectividad WiFi 6E",
     price: 449900,
     stock: 6,
-    image: "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=400&h=300&fit=crop"
+    image: "https://www.venex.com.ar/products_images/1671812959_mother-3.png"
   },
   {
     id: 7,
@@ -61,7 +61,7 @@ const products = [
     description: "Kit de memoria DDR5-6000 32GB (2x16GB) con iluminación RGB sincronizada",
     price: 299900,
     stock: 10,
-    image: "https://images.unsplash.com/photo-1562976540-10de7e7ebc2e?w=400&h=300&fit=crop"
+    image: "https://statics.qloud.com.ar/hypergaming-01-2020/117_25-12-2023-08-12-08-f5-6000j4040f16gx2-tz5rs4.jpg"
   },
   {
     id: 8,

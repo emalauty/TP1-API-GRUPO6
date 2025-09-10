@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../../context/CartContext';
+import './Layout.css';
 
 export default function Header() {
   const { totalItems } = useCart();
 
   return (
     <header className="header">
-      <div className="container">
+      <div className="container-header">
         <Link to="/" className="logo">
           <h1>GamerTech</h1>
         </Link>
