@@ -216,6 +216,31 @@
   color: #6b7280;
 }
 
+/* === Utilidades para el catálogo mejorado === */
+
+/* Skeletons simples para carga */
+.skeleton {
+  background: #eee;
+  border-radius: 12px;
+}
+.skeleton-card { height: 360px; }
+.skeleton-input { width: 320px; height: 40px; }
+.skeleton-select { width: 200px; height: 40px; }
+
+/* Accesibilidad: oculto visual pero disponible para screen readers */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .products-header {
@@ -247,3 +272,5 @@
     grid-template-columns: 1fr;
   }
 }
+
+

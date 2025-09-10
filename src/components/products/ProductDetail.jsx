@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { productService } from '../../asynmock';
-import { useCart } from '../../../context/CartContext';
+import { useCart } from '../../context/CartContext';
 import './ProductDetail.css';
 
 export default function ProductDetail() {

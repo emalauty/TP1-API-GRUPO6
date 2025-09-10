@@ -1,0 +1,40 @@
+/* src/components/products/CategoryList.css */
+
+/* Contenedor */
+.categories-list { margin-top: 1rem; }
+
+/* Lista horizontal y responsive */
+.categories-list ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Botones de categoría como “pills” */
+.category-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--primary-color);
+  border-radius: 0.5rem;
+  background-color: var(--card-bg);
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color .3s ease, color .3s ease, transform .2s ease;
+  user-select: none;
+}
+.category-button:hover,
+.category-button:focus {
+  background-color: var(--primary-color);
+  color: var(--card-bg);
+  transform: translateY(-2px);
+}
+/* Por si querés marcar la activa desde Home con estado */
+.category-button.active {
+  background-color: var(--primary-color);
+  color: var(--card-bg);
+  box-shadow: var(--shadow);
+}
