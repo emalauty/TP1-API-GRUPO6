@@ -7,7 +7,8 @@ const products = [
     description: "La GPU más potente para gaming extremo. Ray tracing de última generación con DLSS 3.0",
     price: 1299900,
     stock: 5,
-    image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&h=300&fit=crop"
+    image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&h=300&fit=crop",
+    userId: "2924"
   },
   {
     id: 2,
@@ -16,7 +17,8 @@ const products = [
     description: "Teclado mecánico gaming con switches Cherry MX Speed e iluminación RGB personalizable",
     price: 189900,
     stock: 12,
-    image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop"
+    image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&h=300&fit=crop",
+    userId: "2924"
   },
   {
     id: 3,
@@ -24,8 +26,9 @@ const products = [
     category: "Mouse",
     description: "Mouse gaming inalámbrico ultra liviano diseñado para esports profesionales",
     price: 149900,
-    stock: 0,
-    image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400&h=300&fit=crop"
+    stock: 3,
+    image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400&h=300&fit=crop",
+    userId: "2924"
   },
   {
     id: 4,
@@ -34,7 +37,8 @@ const products = [
     description: "Auriculares gaming inalámbricos con audio Hi-Res y doble transmisión 2.4G",
     price: 329900,
     stock: 8,
-    image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=300&fit=crop"
+    image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=300&fit=crop",
+    userId: "2924"
   },
   {
     id: 5,
@@ -43,7 +47,8 @@ const products = [
     description: "Procesador de 16 núcleos y 32 hilos, perfecto para gaming y creación de contenido",
     price: 699900,
     stock: 3,
-    image: "https://www.amd.com/content/dam/amd/en/images/products/processors/ryzen/2505503-ryzen-9-7900x.jpg"
+    image: "https://www.amd.com/content/dam/amd/en/images/products/processors/ryzen/2505503-ryzen-9-7900x.jpg",
+    userId: "2924"
   },
   {
     id: 6,
@@ -52,7 +57,8 @@ const products = [
     description: "Motherboard gaming con soporte DDR5, PCIe 5.0 y conectividad WiFi 6E",
     price: 449900,
     stock: 6,
-    image: "https://www.venex.com.ar/products_images/1671812959_mother-3.png"
+    image: "https://www.venex.com.ar/products_images/1671812959_mother-3.png",
+    userId: "2924"
   },
   {
     id: 7,
@@ -60,8 +66,9 @@ const products = [
     category: "Memoria RAM",
     description: "Kit de memoria DDR5-6000 32GB (2x16GB) con iluminación RGB sincronizada",
     price: 299900,
-    stock: 10,
-    image: "https://statics.qloud.com.ar/hypergaming-01-2020/117_25-12-2023-08-12-08-f5-6000j4040f16gx2-tz5rs4.jpg"
+    stock: 5,
+    image: "https://statics.qloud.com.ar/hypergaming-01-2020/117_25-12-2023-08-12-08-f5-6000j4040f16gx2-tz5rs4.jpg",
+    userId: "2924"
   },
   {
     id: 8,
@@ -70,7 +77,8 @@ const products = [
     description: "SSD NVMe M.2 de alta velocidad con tecnología V-NAND 3-bit MLC",
     price: 249900,
     stock: 15,
-    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400&h=300&fit=crop"
+    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400&h=300&fit=crop",
+    userId: "2924"
   }
 ];
 
@@ -142,6 +150,70 @@ export const productService = {
           reject(new Error('Producto no encontrado para actualizar stock'));
         }
       }, 500);
+    });
+  },
+
+  // Crear un nuevo producto
+  createProduct: (productData) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          const newProduct = {
+            ...productData,
+            id: Math.max(...products.map(p => p.id), 0) + 1, // Generar nuevo ID
+            createdAt: new Date().toISOString()
+          };
+          products.push(newProduct);
+          resolve(newProduct);
+        } catch (error) {
+          reject(new Error('Error al crear el producto'));
+        }
+      }, 500);
+    });
+  },
+
+  // Actualizar un producto existente
+  updateProduct: (productId, updateData) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const productIndex = products.findIndex(p => p.id === productId);
+        if (productIndex !== -1) {
+          products[productIndex] = { 
+            ...products[productIndex], 
+            ...updateData,
+            updatedAt: new Date().toISOString()
+          };
+          resolve(products[productIndex]);
+        } else {
+          reject(new Error('Producto no encontrado para actualizar'));
+        }
+      }, 500);
+    });
+  },
+
+  // Eliminar un producto
+  deleteProduct: (productId) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const productIndex = products.findIndex(p => p.id === productId);
+        if (productIndex !== -1) {
+          const deletedProduct = products.splice(productIndex, 1)[0];
+          resolve(deletedProduct);
+        } else {
+          reject(new Error('Producto no encontrado para eliminar'));
+        }
+      }, 500);
+    });
+  },
+
+  // Obtener productos por usuario (simulado)
+  getProductsByUserId: (userId) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Filtrar productos que pertenecen específicamente al usuario autenticado
+        const userProducts = products.filter(p => p.userId === userId);
+        resolve(userProducts);
+      }, 800);
     });
   }
 };

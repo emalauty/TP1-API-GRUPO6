@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer } from 'react';
+import { productService } from '../asynmock';
 
 // Acciones del carrito
 const CART_ACTIONS = {
@@ -156,6 +157,28 @@ export const CartProvider = ({ children }) => {
     return item ? item.quantity : 0;
   };
 
+  // Función para procesar el checkout
+  const processCheckout = async () => {
+    try {
+      // Actualizar el stock de cada producto en el carrito
+      const updatePromises = cartState.items.map(async (item) => {
+        const newStock = Math.max(0, item.stock - item.quantity);
+        await productService.updateProductStock(item.id, newStock);
+        return { productId: item.id, newStock };
+      });
+
+      await Promise.all(updatePromises);
+      
+      // Limpiar el carrito después de procesar el checkout
+      clearCart();
+      
+      return { success: true, message: '¡Compra realizada con éxito!' };
+    } catch (error) {
+      console.error('Error al procesar el checkout:', error);
+      return { success: false, message: 'Error al procesar la compra. Intenta nuevamente.' };
+    }
+  };
+
   const value = {
     ...cartState,
     addToCart,
@@ -163,7 +186,8 @@ export const CartProvider = ({ children }) => {
     updateQuantity,
     clearCart,
     isInCart,
-    getItemQuantity
+    getItemQuantity,
+    processCheckout
   };
 
   return (

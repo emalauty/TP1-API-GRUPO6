@@ -22,6 +22,9 @@ export default function Header() {
         <nav className="nav-menu">
           <Link to="/" className="btn">Inicio</Link>
           <Link to="/products" className="btn">Productos</Link>
+          {isAuthenticated && (
+            <Link to="/my-products" className="btn">Mis Productos</Link>
+          )}
         </nav>
 
         <div className="header-actions">

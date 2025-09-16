@@ -18,6 +18,7 @@ import Cart from './components/cart/Cart';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import UserProfile from './components/auth/UserProfile';
+import MyProducts from './components/products/MyProducts';
 
 export default function App() {
   return (
@@ -42,6 +43,8 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<UserProfile />} />
+                {/* Gestión de productos del usuario */}
+                <Route path="/my-products" element={<MyProducts />} />
               </Routes>
             </main>
 

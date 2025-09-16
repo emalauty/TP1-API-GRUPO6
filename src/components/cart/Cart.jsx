@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Cart.css';
 import { useCart } from '../../context/CartContext';
 import CartItem from './CartItem';
 
 export default function Cart() {
-  const { items, totalAmount, totalItems } = useCart();
+  const { items, totalAmount, totalItems, processCheckout } = useCart();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [checkoutMessage, setCheckoutMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' o 'error'
 
   // Formatear precio a pesos argentinos
   const formatPrice = (price) => {
@@ -12,6 +15,26 @@ export default function Cart() {
       style: 'currency',
       currency: 'ARS'
     }).format(price);
+  };
+
+  // Manejar el proceso de checkout
+  const handleCheckout = async () => {
+    setIsProcessing(true);
+    setCheckoutMessage('');
+    
+    const result = await processCheckout();
+    
+    setIsProcessing(false);
+    setCheckoutMessage(result.message);
+    setMessageType(result.success ? 'success' : 'error');
+    
+    // Limpiar el mensaje después de 5 segundos
+    if (result.success) {
+      setTimeout(() => {
+        setCheckoutMessage('');
+        setMessageType('');
+      }, 5000);
+    }
   };
 
   return (
@@ -51,8 +74,19 @@ export default function Cart() {
               <span>{formatPrice(totalAmount)}</span>
             </div>
           </div>
-          <button className="btn btn-primary" disabled={items.length === 0}>
-            Proceder al pago
+          
+          {checkoutMessage && (
+            <div className={`checkout-message ${messageType}`}>
+              {checkoutMessage}
+            </div>
+          )}
+          
+          <button 
+            className="btn btn-primary" 
+            disabled={items.length === 0 || isProcessing}
+            onClick={handleCheckout}
+          >
+            {isProcessing ? 'Procesando...' : 'Proceder al pago'}
           </button>
         </div>
       </div>
