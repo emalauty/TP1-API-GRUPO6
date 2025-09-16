@@ -8,16 +8,23 @@
   z-index: 100;
 }
 
+/* Contenedor general */
 .header .container-header {
   display: flex;
-  justify-content: space-between; /* separa logo, menú y acciones */
   align-items: center;
-  gap: 2rem; /* aire entre bloques */
+  justify-content: space-between; /* logo izq - resto der */
+  width: 100%; /* ocupa todo el ancho */
+  max-width: 100%; /* evita centrado */
+  margin: 0;       /* sin margen auto */
+  padding: 0 1rem;
+  gap: 2rem;
 }
 
-/* Logo */
+/* Logo fijo a la izquierda */
 .logo {
   text-decoration: none;
+  flex-shrink: 0;
+  margin-right: auto; /* fuerza a ir a la izquierda */
 }
 
 .logo h1 {
@@ -27,12 +34,18 @@
   margin: 0;
 }
 
+/* Menú y acciones a la derecha */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-left: auto; /* fuerza a ir a la derecha */
+}
+
 /* Navigation */
 .nav-menu {
-  flex: 1; /* ocupa el espacio central */
   display: flex;
-  justify-content: center; /* centra horizontal */
-  gap: 2.5rem; /* separación entre links */
+  gap: 2.5rem;
 }
 
 .nav-link {
@@ -64,10 +77,8 @@
 /* Header Actions */
 .header-actions {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   gap: 1rem;
-  height: 100%; /* ocupa toda la altura */
 }
 
 /* Cart Button */
@@ -113,28 +124,11 @@
   100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
 }
 
-/* Login button */
-.login-btn {
-  background: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: 0.75rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.login-btn:hover {
-  background: var(--primary-color);
-  color: white;
-}
-
 /* User Menu */
 .user-menu {
   display: flex;
   align-items: center;
   gap: 1rem;
-  height: 100%;
 }
 
 .user-greeting {
@@ -173,10 +167,21 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .header .container {
+  .header .container-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .header-right {
     flex-direction: column;
     gap: 1rem;
-    text-align: center;
+    justify-content: center;
+    margin-left: 0;
+  }
+
+  .logo {
+    margin-right: 0; /* en mobile, que se centre */
   }
 
   .nav-menu {
