@@ -1,6 +1,6 @@
 # GamerTech E‑Commerce Frontend
 
-Este repositorio contiene la implementación del front‑end de **GamerTech**, una aplicación de comercio electrónico para hardware y accesorios de gaming.  Fue desarrollada como primera entrega del Trabajo Práctico para la materia de Desarrollo Web y cumple los requisitos de mostrar un catálogo ordenado alfabéticamente, permitir filtrar por categorías, ver el detalle de los productos, gestionar un carrito y realizar operaciones básicas de autenticación【648625826471941†L34-L53】.
+Este repositorio contiene la implementación del front‑end de **GamerTech**, una aplicación de comercio electrónico para hardware y accesorios de gaming.  Fue desarrollada como primera entrega del Trabajo Práctico para la materia API y cumple los requisitos de mostrar un catálogo ordenado alfabéticamente, permitir filtrar por categorías, ver el detalle de los productos, gestionar un carrito y realizar operaciones básicas de autenticación【648625826471941†L34-L53】.
 
 ## Funcionalidades principales
 
@@ -94,4 +94,5 @@ TP1-API-GRUPO6-main/
 ---
 
 **© GamerTech** – Este proyecto es una práctica académica que ilustra el uso de React, Vite, Context API, React Router y llamadas asíncronas para construir una aplicación de comercio electrónico moderna.
+
 
