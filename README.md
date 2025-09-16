@@ -12,6 +12,7 @@ Este repositorio contiene la implementación del front‑end de **GamerTech**, u
 - **Navegación con React Router**: se utilizan rutas declarativas (`/`, `/products`, `/products/:id`, `/cart`, `/login`, `/register`).  Los hooks `useParams` y `useNavigate` permiten leer parámetros de URL y redirigir programáticamente.
 - **Carga asíncrona**: los productos y las categorías se obtienen desde `asynmock.js`, un servicio que devuelve listas simuladas.  Se usan `async/await` y promesas para interactuar con la API y manejar estados de carga, errores o vacíos.
 - **UI/UX**: diseño responsive con estilos modulares y variables CSS.  Se emplean componentes reutilizables (`ProductCard`, `ProductSearch`, `CartItem`) y skeletons mientras se cargan los datos para mejorar la percepción de rendimiento.
+- **Mis productos**: se autentica el usuario, se habilita el componente de Mis Productos donde el usuario autenticado puede agregar nuevos productos, gestionar el stock y eliminar los productos que haya creado.
 
 ## Estructura del proyecto
 
@@ -93,3 +94,4 @@ TP1-API-GRUPO6-main/
 ---
 
 **© GamerTech** – Este proyecto es una práctica académica que ilustra el uso de React, Vite, Context API, React Router y llamadas asíncronas para construir una aplicación de comercio electrónico moderna.
+
