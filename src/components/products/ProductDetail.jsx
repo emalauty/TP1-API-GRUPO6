@@ -1,7 +1,7 @@
 // src/components/products/ProductDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { productService } from '../../asynmock';
+import { productService } from '../../services/productService';
 import { useCart } from '../../context/CartContext';
 import './ProductDetail.css';
 
@@ -18,16 +18,12 @@ export default function ProductDetail() {
     const loadProduct = async () => {
       try {
         setLoading(true);
-        const data = await productService.getProducts();
-        const found = data.find((p) => p.id === parseInt(id));
-        if (!found) {
-          setError('Producto no encontrado');
-        } else {
-          setProduct(found);
-        }
+        // Utilizar el endpoint del backend para obtener un producto por su ID
+        const fetched = await productService.getProductById(id);
+        setProduct(fetched);
       } catch (err) {
         console.error(err);
-        setError('Error cargando producto');
+        setError(err.message || 'Error cargando producto');
       } finally {
         setLoading(false);
       }
@@ -35,13 +31,11 @@ export default function ProductDetail() {
     loadProduct();
   }, [id]);
 
-
   const currentQuantity = getItemQuantity(product?.id);
   const maxReached = currentQuantity >= product?.stock;
 
   const handleAddToCart = () => {
     if (product.stock > 0 && !maxReached) {
-
       addToCart(product);
     }
   };

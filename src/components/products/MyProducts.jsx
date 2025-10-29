@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { productService } from '../../asynmock';
+import { productService } from '../../services/productService';
 import './MyProducts.css';
 
 export default function MyProducts() {
@@ -19,19 +19,23 @@ export default function MyProducts() {
     }).format(price);
   };
 
-  // Cargar productos del usuario
-  const loadProducts = async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    try {
-      const userProducts = await productService.getProductsByUserId(user.id);
-      setProducts(userProducts);
-    } catch (error) {
-      setMessage('Error al cargar productos');
-    }
-    setLoading(false);
-  };
+  useEffect(() => {
+    const loadProducts = async () => {
+      if (!user) return;
+      
+      setLoading(true);
+      try {
+        const userProducts = await productService.getProductsByUserId(user.id);
+        setProducts(userProducts);
+      } catch (error) {
+        console.error('Error loading products:', error);
+        setMessage('Error al cargar productos');
+      }
+      setLoading(false);
+    };
+
+    loadProducts();
+  }, [user]);
 
   // Eliminar producto
   const deleteProduct = async (productId) => {
@@ -41,7 +45,7 @@ export default function MyProducts() {
       await productService.deleteProduct(productId);
       setProducts(products.filter(p => p.id !== productId));
       setMessage('Producto eliminado');
-    } catch (error) {
+    } catch {
       setMessage('Error al eliminar');
     }
   };
@@ -54,14 +58,10 @@ export default function MyProducts() {
         p.id === productId ? { ...p, stock: newStock } : p
       ));
       setMessage('Stock actualizado');
-    } catch (error) {
+    } catch {
       setMessage('Error al actualizar stock');
     }
   };
-
-  useEffect(() => {
-    loadProducts();
-  }, [user]);
 
   if (!isAuthenticated) {
     return (
@@ -212,7 +212,7 @@ function ProductForm({ product, onClose, onSave }) {
         const newProduct = await productService.createProduct(productData);
         onSave(newProduct);
       }
-    } catch (error) {
+    } catch {
       alert('Error al guardar el producto');
     }
     setLoading(false);

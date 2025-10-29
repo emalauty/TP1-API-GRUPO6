@@ -166,6 +166,7 @@ export const productService = {
           products.push(newProduct);
           resolve(newProduct);
         } catch (error) {
+          console.error(error);
           reject(new Error('Error al crear el producto'));
         }
       }, 500);

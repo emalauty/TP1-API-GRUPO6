@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { productService } from '../../asynmock';
+import { productService } from '../../services/productService';
 import './CategoryList.css';
 
 export default function CategoryList({ onSelectCategory }) {

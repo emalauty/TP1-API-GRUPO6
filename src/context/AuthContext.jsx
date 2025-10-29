@@ -17,6 +17,9 @@ const initialAuthState = {
   error: null
 };
 
+// URL base de la API del backend. Ajusta el puerto si tu backend corre en otro.
+const API_BASE = 'http://localhost:8080/api';
+
 // Reducer para manejar las acciones de autenticación
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -71,6 +74,7 @@ const authReducer = (state, action) => {
 const AuthContext = createContext();
 
 // Hook personalizado para usar el contexto de autenticación
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -103,36 +107,32 @@ export const AuthProvider = ({ children }) => {
   // Función para iniciar sesión
   const login = async (email, password) => {
     dispatch({ type: AUTH_ACTIONS.LOGIN_START });
-
     try {
-      const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
-      const users = await res.json();
-
-      if (users.length > 0) {
-        const user = users[0];
-        // Guardar usuario en localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_SUCCESS,
-          payload: user
-        });
-        
-        return { success: true, user };
-      } else {
-        const error = 'Email o contraseña incorrectos';
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_FAILURE,
-          payload: error
-        });
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const error = data.message || 'Email o contraseña incorrectos';
+        dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: error });
         return { success: false, error };
       }
+      // Guardar user y token
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: data.user });
+      return { success: true, user: data.user };
     } catch (error) {
-      const errorMessage = 'No se pudo conectar al servidor';
-      dispatch({
-        type: AUTH_ACTIONS.LOGIN_FAILURE,
-        payload: errorMessage
-      });
+      const errorMessage = error.message || 'No se pudo conectar al servidor';
+      dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: errorMessage });
       return { success: false, error: errorMessage };
     }
   };
@@ -140,67 +140,39 @@ export const AuthProvider = ({ children }) => {
   // Función para cerrar sesión
   const logout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     dispatch({ type: AUTH_ACTIONS.LOGOUT });
   };
 
   // Función para registrar usuario
   const register = async (userData) => {
     dispatch({ type: AUTH_ACTIONS.LOGIN_START });
-
     try {
-      // Verificar si el email ya existe
-      const existingRes = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(userData.email)}`);
-      const existingUsers = await existingRes.json();
-      
-      if (existingUsers.length > 0) {
-        const error = 'El email ya está registrado';
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_FAILURE,
-          payload: error
-        });
-        return { success: false, error };
-      }
-
-      // Crear nuevo usuario
-      const newUser = {
-        ...userData,
-        id: Date.now(), // ID simple para el ejemplo
-        createdAt: new Date().toISOString()
-      };
-
-      const res = await fetch('http://localhost:3000/users', {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newUser)
+        body: JSON.stringify(userData),
       });
-
-      if (res.ok) {
-        const user = await res.json();
-        // Guardar usuario en localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_SUCCESS,
-          payload: user
-        });
-        
-        return { success: true, user };
-      } else {
-        const error = 'Error al crear la cuenta';
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_FAILURE,
-          payload: error
-        });
+      const data = await res.json();
+      if (!res.ok) {
+        const error = data.message || 'Error al crear la cuenta';
+        dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: error });
         return { success: false, error };
       }
+      // Guardar user y token
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: data.user });
+      return { success: true, user: data.user };
     } catch (error) {
-      const errorMessage = 'No se pudo conectar al servidor';
-      dispatch({
-        type: AUTH_ACTIONS.LOGIN_FAILURE,
-        payload: errorMessage
-      });
+      const errorMessage = error.message || 'No se pudo conectar al servidor';
+      dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: errorMessage });
       return { success: false, error: errorMessage };
     }
   };

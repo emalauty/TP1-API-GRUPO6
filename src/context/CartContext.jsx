@@ -103,6 +103,7 @@ const cartReducer = (state, action) => {
 const CartContext = createContext();
 
 // Hook personalizado para usar el contexto del carrito
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {

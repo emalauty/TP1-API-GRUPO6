@@ -1,6 +1,7 @@
 // src/components/products/ProductList.jsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { productService } from '../../asynmock';
+// Servicio de productos que consume la API del backend
+import { productService } from '../../services/productService';
 import { useCart } from '../../context/CartContext';
 import ProductCard from './ProductCard';
 import ProductSearch from './ProductSearch';
@@ -17,7 +18,7 @@ const SORTERS = {
 
 /**
  * Listado de productos:
- * - Carga inicial desde asynmock
+ * - Carga inicial desde el servicio de productos (productService)
  * - Filtra por categoría (prop desde Home)
  * - Búsqueda por texto
  * - Ordenamiento configurable
