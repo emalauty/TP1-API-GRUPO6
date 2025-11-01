@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import { productService } from '../asynmock';
+import { productService } from '../services/productService';
+import { orderService } from '../services/orderService';
 
 // Acciones del carrito
 const CART_ACTIONS = {
@@ -22,27 +23,27 @@ const cartReducer = (state, action) => {
     case CART_ACTIONS.ADD_ITEM: {
       const { product, quantity = 1 } = action.payload;
       const existingItemIndex = state.items.findIndex(item => item.id === product.id);
-      
+
       let updatedItems;
-      
+
       if (existingItemIndex >= 0) {
         // Si el producto ya existe, actualizar la cantidad
-          updatedItems = state.items.map((item, index) => 
-            index === existingItemIndex 
-              ? { 
-                  ...item, 
-                  quantity: Math.min(item.quantity + quantity, item.stock) // Limitar por stock
-                }
-              : item
-          );
+        updatedItems = state.items.map((item, index) =>
+          index === existingItemIndex
+            ? {
+                ...item,
+                quantity: Math.min(item.quantity + quantity, item.stock) // Limitar por stock
+              }
+            : item
+        );
       } else {
         // Si es un producto nuevo, agregarlo al carrito
-          updatedItems = [...state.items, { ...product, quantity: Math.min(quantity, product.stock) }];
+        updatedItems = [...state.items, { ...product, quantity: Math.min(quantity, product.stock) }];
       }
-      
+
       const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
       const totalAmount = updatedItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-      
+
       return {
         ...state,
         items: updatedItems,
@@ -54,10 +55,10 @@ const cartReducer = (state, action) => {
     case CART_ACTIONS.REMOVE_ITEM: {
       const productId = action.payload;
       const updatedItems = state.items.filter(item => item.id !== productId);
-      
+
       const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
       const totalAmount = updatedItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-      
+
       return {
         ...state,
         items: updatedItems,
@@ -68,20 +69,20 @@ const cartReducer = (state, action) => {
 
     case CART_ACTIONS.UPDATE_QUANTITY: {
       const { productId, quantity } = action.payload;
-      
+
       if (quantity <= 0) {
         return cartReducer(state, { type: CART_ACTIONS.REMOVE_ITEM, payload: productId });
       }
-      
-      const updatedItems = state.items.map(item => 
-        item.id === productId 
+
+      const updatedItems = state.items.map(item =>
+        item.id === productId
           ? { ...item, quantity }
           : item
       );
-      
+
       const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
       const totalAmount = updatedItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-      
+
       return {
         ...state,
         items: updatedItems,
@@ -161,22 +162,42 @@ export const CartProvider = ({ children }) => {
   // Función para procesar el checkout
   const processCheckout = async () => {
     try {
+      // Construir items para el pedido y actualizar stock localmente
+      const items = cartState.items.map(item => ({
+        productoId: item.id,
+        cantidad: item.quantity,
+      }));
+
+      // Solicitar datos mínimos de envío al usuario
+      const direccionEnvio = window.prompt('Dirección de envío:', '');
+      if (!direccionEnvio) {
+        return { success: false, message: 'Debes ingresar una dirección de envío.' };
+      }
+      const telefonoContacto = window.prompt('Teléfono de contacto (opcional):', '');
+      const notas = window.prompt('Notas adicionales (opcional):', '');
+
+      // Crear pedido en el backend
+      await orderService.createPedido({
+        direccionEnvio,
+        telefonoContacto,
+        notas,
+        items,
+      });
+
       // Actualizar el stock de cada producto en el carrito
       const updatePromises = cartState.items.map(async (item) => {
         const newStock = Math.max(0, item.stock - item.quantity);
         await productService.updateProductStock(item.id, newStock);
         return { productId: item.id, newStock };
       });
-
       await Promise.all(updatePromises);
-      
+
       // Limpiar el carrito después de procesar el checkout
       clearCart();
-      
-      return { success: true, message: '¡Compra realizada con éxito!' };
+      return { success: true, message: '¡Pedido realizado con éxito!' };
     } catch (error) {
       console.error('Error al procesar el checkout:', error);
-      return { success: false, message: 'Error al procesar la compra. Intenta nuevamente.' };
+      return { success: false, message: error.message || 'Error al procesar la compra. Intenta nuevamente.' };
     }
   };
 

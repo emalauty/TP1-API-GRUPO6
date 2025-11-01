@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import './Auth.css';
 
 export default function UserProfile() {
@@ -19,28 +19,28 @@ export default function UserProfile() {
     <div className="auth-container container">
       <div className="auth-card card">
         <h2 className="section-title">Mi Perfil</h2>
-        
+
         <div className="profile-info">
           <div className="profile-field">
             <label>Nombre de usuario:</label>
             <p>{user?.username}</p>
           </div>
-          
+
           <div className="profile-field">
             <label>Email:</label>
             <p>{user?.email}</p>
           </div>
-          
+
           <div className="profile-field">
             <label>Nombre:</label>
             <p>{user?.name}</p>
           </div>
-          
+
           <div className="profile-field">
             <label>Apellido:</label>
             <p>{user?.apellido}</p>
           </div>
-          
+
           {user?.createdAt && (
             <div className="profile-field">
               <label>Miembro desde:</label>
@@ -53,6 +53,11 @@ export default function UserProfile() {
           <button onClick={handleLogout} className="btn btn-secondary">
             Cerrar Sesión
           </button>
+
+          {/* Enlace a la lista de pedidos del usuario */}
+          <Link to="/my-orders" className="btn btn-primary" style={{ marginLeft: '1rem' }}>
+            Mis pedidos
+          </Link>
         </div>
       </div>
     </div>
