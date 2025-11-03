@@ -24,16 +24,16 @@ export default function CategoryList({ onSelectCategory }) {
       ) : (
         <ul>
           {categories.map((cat) => (
-            <li key={cat} className="category-item">
+            <li key={cat.id} className="category-item">
               <button 
                 className="category-button"
-                onClick={() => onSelectCategory(cat)}
+                onClick={() => onSelectCategory(cat.id)}
               >
-                {cat}
+                {cat.name}
               </button>
             </li>
           ))}
-          <li>
+          <li key="all">
             <button 
               className="category-button"
               onClick={() => onSelectCategory('')}

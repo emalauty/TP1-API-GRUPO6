@@ -7,6 +7,8 @@ import './Layout.css';
 export default function Header() {
   const { totalItems } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
+  
+  const isAdmin = user?.role === 'ADMIN';
 
   const handleLogout = () => {
     logout();
@@ -28,8 +30,11 @@ export default function Header() {
           <nav className="nav-menu">
             <Link to="/" className="btn">Inicio</Link>
             <Link to="/products" className="btn">Productos</Link>
-            {isAuthenticated && (
-              <Link to="/my-products" className="btn">Mis Productos</Link>
+            {isAdmin && (
+              <Link to="/admin" className="btn btn-admin">🛠️ Panel Admin</Link>
+            )}
+            {isAuthenticated && !isAdmin && (
+              <Link to="/orders" className="btn">📋 Mis Pedidos</Link>
             )}
           </nav>
 
@@ -44,7 +49,7 @@ export default function Header() {
             {isAuthenticated ? (
               <div className="user-menu">
                 <Link to="/profile" className="user-greeting">
-                  👤 Hola, {user?.username || user?.name || user?.email}
+                  👤 {user?.nombre || user?.email}
                 </Link>
                 <button onClick={handleLogout} className="btn-logout">
                   Cerrar Sesión

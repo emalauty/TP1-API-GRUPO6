@@ -1,21 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { orderService } from '../../services/orderService';
-import { useAuth } from '../../context/AuthContext';
-import './MyOrders.css';
+import './OrderManagement.css';
 
-// Página que muestra los pedidos del usuario autenticado.
-export default function MyOrders() {
-  const { isAuthenticated } = useAuth();
+export default function OrderManagement() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filterEstado, setFilterEstado] = useState('TODOS');
   const [expandedOrder, setExpandedOrder] = useState(null);
-  const [processingOrderId, setProcessingOrderId] = useState(null);
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
+
+  const estadosPedido = ['PENDIENTE', 'CONFIRMADO', 'ENVIADO', 'ENTREGADO', 'CANCELADO'];
+
+  useEffect(() => {
+    loadOrders();
+  }, [filterEstado]);
 
   const loadOrders = async () => {
     try {
       setLoading(true);
-      const data = await orderService.getMisPedidos();
+      let data;
+      if (filterEstado === 'TODOS') {
+        data = await orderService.getAllPedidos();
+      } else {
+        data = await orderService.getPedidosByEstado(filterEstado);
+      }
       setOrders(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err) {
@@ -25,13 +34,32 @@ export default function MyOrders() {
     }
   };
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setLoading(false);
+  const handleUpdateEstado = async (orderId, nuevoEstado) => {
+    try {
+      setUpdatingOrderId(orderId);
+      await orderService.updateEstadoPedido(orderId, nuevoEstado);
+      await loadOrders();
+      alert('Estado del pedido actualizado');
+    } catch (err) {
+      alert(err.message || 'Error al actualizar estado');
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm('¿Estás seguro de eliminar este pedido?')) {
       return;
     }
-    loadOrders();
-  }, [isAuthenticated]);
+
+    try {
+      await orderService.deletePedido(orderId);
+      await loadOrders();
+      alert('Pedido eliminado');
+    } catch (err) {
+      alert(err.message || 'Error al eliminar pedido');
+    }
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-AR', {
@@ -69,68 +97,52 @@ export default function MyOrders() {
     return labels[estado] || estado;
   };
 
-  const handleMarcarRecibido = async (orderId) => {
-    if (!window.confirm('¿Confirmas que recibiste este pedido?')) {
-      return;
-    }
-
-    try {
-      setProcessingOrderId(orderId);
-      await orderService.marcarComoRecibido(orderId);
-      // Recargar los pedidos
-      await loadOrders();
-      alert('¡Pedido marcado como recibido!');
-    } catch (err) {
-      alert(err.message || 'Error al marcar el pedido como recibido');
-    } finally {
-      setProcessingOrderId(null);
-    }
-  };
-
   const toggleOrderDetails = (orderId) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="container">
-        <h2>Debes iniciar sesión para ver tus pedidos</h2>
-      </div>
-    );
-  }
-
   if (loading) {
-    return (
-      <div className="container">
-        <p>Cargando pedidos...</p>
-      </div>
-    );
+    return <div className="loading-state">Cargando pedidos...</div>;
   }
 
   if (error) {
-    return (
-      <div className="container">
-        <p role="alert">{error}</p>
-      </div>
-    );
+    return <div className="error-state">{error}</div>;
   }
 
   return (
-    <div className="container my-orders-container">
-      <h2 className="section-title">Mis Pedidos</h2>
-      
+    <div className="order-management">
+      <div className="management-header">
+        <h2>Gestión de Pedidos</h2>
+        <div className="filter-controls">
+          <label>Filtrar por estado:</label>
+          <select
+            value={filterEstado}
+            onChange={(e) => setFilterEstado(e.target.value)}
+            className="filter-select"
+          >
+            <option value="TODOS">Todos</option>
+            {estadosPedido.map((estado) => (
+              <option key={estado} value={estado}>
+                {getEstadoLabel(estado)}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {orders.length === 0 ? (
-        <div className="empty-orders">
-          <p>Aún no tienes pedidos.</p>
+        <div className="empty-state">
+          <p>No hay pedidos {filterEstado !== 'TODOS' && `con estado "${getEstadoLabel(filterEstado)}"`}</p>
         </div>
       ) : (
         <div className="orders-list">
           {orders.map((order) => (
-            <div key={order.id} className="order-card">
+            <div key={order.id} className="admin-order-card">
               <div className="order-header" onClick={() => toggleOrderDetails(order.id)}>
                 <div className="order-info">
                   <h3>Pedido #{order.id}</h3>
                   <span className="order-date">{formatDate(order.fechaPedido || order.fecha)}</span>
+                  <span className="order-user">Cliente: {order.usuarioNombre || `ID: ${order.usuarioId}`}</span>
                 </div>
                 <div className="order-summary">
                   <span className={`order-badge ${getEstadoBadgeClass(order.estado)}`}>
@@ -200,17 +212,32 @@ export default function MyOrders() {
                     </table>
                   </div>
 
-                  {order.estado === 'ENVIADO' && (
-                    <div className="order-actions">
-                      <button
-                        className="btn btn-success"
-                        onClick={() => handleMarcarRecibido(order.id)}
-                        disabled={processingOrderId === order.id}
+                  <div className="order-actions">
+                    <div className="estado-control">
+                      <label>Cambiar Estado:</label>
+                      <select
+                        value={order.estado}
+                        onChange={(e) => handleUpdateEstado(order.id, e.target.value)}
+                        disabled={updatingOrderId === order.id || order.estado === 'CANCELADO'}
+                        className="estado-select"
                       >
-                        {processingOrderId === order.id ? 'Procesando...' : '✓ Marcar como Recibido'}
-                      </button>
+                        {estadosPedido.map((estado) => (
+                          <option key={estado} value={estado}>
+                            {getEstadoLabel(estado)}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                  )}
+
+                    {order.estado === 'CANCELADO' && (
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDeleteOrder(order.id)}
+                      >
+                        🗑️ Eliminar Pedido
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

@@ -20,6 +20,7 @@ import Register from './components/auth/Register';
 import UserProfile from './components/auth/UserProfile';
 import MyProducts from './components/products/MyProducts';
 import MyOrders from './components/orders/MyOrders';
+import AdminDashboard from './components/admin/AdminDashboard';
 
 export default function App() {
   return (
@@ -47,7 +48,9 @@ export default function App() {
                 {/* Gestión de productos del usuario */}
                 <Route path="/my-products" element={<MyProducts />} />
                 {/* Historial de pedidos del usuario */}
-                <Route path="/my-orders" element={<MyOrders />} />
+                <Route path="/orders" element={<MyOrders />} />
+                {/* Panel de administración */}
+                <Route path="/admin" element={<AdminDashboard />} />
               </Routes>
             </main>
 

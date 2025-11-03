@@ -55,7 +55,14 @@ export default function ProductDetail() {
     <div className="product-detail container">
       <div className="product-detail-card">
         <div className="product-detail-image">
-          <img src={product.image} alt={product.name} />
+          <img 
+            src={product.image || product.imageUrl || 'https://via.placeholder.com/600x600?text=Sin+Imagen'} 
+            alt={product.name}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://via.placeholder.com/600x600?text=Sin+Imagen';
+            }}
+          />
           {product.stock === 0 && <div className="out-of-stock-overlay">Sin Stock</div>}
         </div>
         <div className="product-detail-info">

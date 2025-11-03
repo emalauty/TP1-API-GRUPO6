@@ -160,27 +160,19 @@ export const CartProvider = ({ children }) => {
   };
 
   // Función para procesar el checkout
-  const processCheckout = async () => {
+  const processCheckout = async (formData) => {
     try {
-      // Construir items para el pedido y actualizar stock localmente
+      // Construir items para el pedido
       const items = cartState.items.map(item => ({
         productoId: item.id,
         cantidad: item.quantity,
       }));
 
-      // Solicitar datos mínimos de envío al usuario
-      const direccionEnvio = window.prompt('Dirección de envío:', '');
-      if (!direccionEnvio) {
-        return { success: false, message: 'Debes ingresar una dirección de envío.' };
-      }
-      const telefonoContacto = window.prompt('Teléfono de contacto (opcional):', '');
-      const notas = window.prompt('Notas adicionales (opcional):', '');
-
-      // Crear pedido en el backend
+      // Crear pedido en el backend con los datos del formulario
       await orderService.createPedido({
-        direccionEnvio,
-        telefonoContacto,
-        notas,
+        direccionEnvio: formData.direccionEnvio,
+        telefonoContacto: formData.telefonoContacto || null,
+        notas: formData.notas || null,
         items,
       });
 
@@ -194,7 +186,7 @@ export const CartProvider = ({ children }) => {
 
       // Limpiar el carrito después de procesar el checkout
       clearCart();
-      return { success: true, message: '¡Pedido realizado con éxito!' };
+      return { success: true, message: '¡Pedido realizado con éxito! Puedes ver el estado en "Mis Pedidos"' };
     } catch (error) {
       console.error('Error al procesar el checkout:', error);
       return { success: false, message: error.message || 'Error al procesar la compra. Intenta nuevamente.' };

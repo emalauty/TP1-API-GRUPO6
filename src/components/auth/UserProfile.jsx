@@ -4,7 +4,7 @@ import { Navigate, Link } from 'react-router-dom';
 import './Auth.css';
 
 export default function UserProfile() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isAdmin } = useAuth();
 
   // Redirigir si no está autenticado
   if (!isAuthenticated) {
@@ -41,6 +41,18 @@ export default function UserProfile() {
             <p>{user?.apellido}</p>
           </div>
 
+          <div className="profile-field">
+            <label>Rol:</label>
+            <p className={`role-badge ${user?.role === 'ADMIN' ? 'role-admin' : 'role-user'}`}>
+              {user?.role === 'ADMIN' ? '👑 Administrador' : '🛒 Cliente'}
+            </p>
+            {user?.role === 'ADMIN' && (
+              <small style={{ color: '#666', marginTop: '0.5rem', display: 'block' }}>
+                Puedes gestionar productos y pedidos del sistema
+              </small>
+            )}
+          </div>
+
           {user?.createdAt && (
             <div className="profile-field">
               <label>Miembro desde:</label>
@@ -50,14 +62,21 @@ export default function UserProfile() {
         </div>
 
         <div className="profile-actions">
-          <button onClick={handleLogout} className="btn btn-secondary">
+          {/* Enlace a Mis pedidos / Gestión de pedidos */}
+          <Link to="/orders" className="btn btn-primary">
+            {user?.role === 'ADMIN' ? '🛠️ Gestión de Pedidos' : '📋 Mis Pedidos'}
+          </Link>
+
+          {/* Enlace a Gestionar Productos solo para ADMIN */}
+          {user?.role === 'ADMIN' && (
+            <Link to="/my-products" className="btn btn-success" style={{ marginLeft: '1rem' }}>
+              🛠️ Gestionar Productos
+            </Link>
+          )}
+
+          <button onClick={handleLogout} className="btn btn-secondary" style={{ marginLeft: '1rem' }}>
             Cerrar Sesión
           </button>
-
-          {/* Enlace a la lista de pedidos del usuario */}
-          <Link to="/my-orders" className="btn btn-primary" style={{ marginLeft: '1rem' }}>
-            Mis pedidos
-          </Link>
         </div>
       </div>
     </div>

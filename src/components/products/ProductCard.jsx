@@ -17,7 +17,16 @@ export default function ProductCard({ product, onAdd }) {
         <article className="card product-card" role="listitem">
         <div className="product-image-container">
             <Link to={`/products/${product.id}`}>
-            <img src={product.image} alt={`Foto de ${product.name}`} className="product-img" loading="lazy" />
+            <img 
+                src={product.image || product.imageUrl || 'https://via.placeholder.com/300x300?text=Sin+Imagen'} 
+                alt={`Foto de ${product.name}`} 
+                className="product-img" 
+                loading="lazy"
+                onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/300x300?text=Sin+Imagen';
+                }}
+            />
             </Link>
             {outOfStock && <div className="out-of-stock-overlay">Sin Stock</div>}
         </div>

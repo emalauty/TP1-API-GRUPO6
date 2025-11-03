@@ -57,6 +57,78 @@ export const productService = {
   },
 
   /**
+   * Obtiene una categoría por su ID (endpoint público).
+   * @param {number|string} id ID de la categoría
+   */
+  async getCategoryById(id) {
+    const res = await fetch(`${API_BASE}/categories/${id}`);
+    if (!res.ok) {
+      throw new Error('Categoría no encontrada');
+    }
+    return await res.json();
+  },
+
+  /**
+   * Crea una nueva categoría (requiere autenticación).
+   * @param {Object} categoryData Datos de la categoría { name, description }
+   */
+  async createCategory(categoryData) {
+    const res = await fetch(`${API_BASE}/categories`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      body: JSON.stringify(categoryData),
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Error al crear la categoría';
+      throw new Error(errorMessage);
+    }
+    return await res.json();
+  },
+
+  /**
+   * Actualiza una categoría existente (requiere autenticación).
+   * @param {number|string} id ID de la categoría
+   * @param {Object} categoryData Datos actualizados { name, description }
+   */
+  async updateCategory(id, categoryData) {
+    const res = await fetch(`${API_BASE}/categories/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+      body: JSON.stringify(categoryData),
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Error al actualizar la categoría';
+      throw new Error(errorMessage);
+    }
+    return await res.json();
+  },
+
+  /**
+   * Elimina una categoría (requiere autenticación).
+   * @param {number|string} id ID de la categoría
+   */
+  async deleteCategory(id) {
+    const res = await fetch(`${API_BASE}/categories/${id}`, {
+      method: 'DELETE',
+      headers: authHeaders(),
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Error al eliminar la categoría';
+      throw new Error(errorMessage);
+    }
+    return true;
+  },
+
+  /**
    * Obtiene los productos creados por un usuario específico (requiere autenticación).
    * @param {number|string} userId ID del usuario
    */

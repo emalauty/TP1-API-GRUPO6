@@ -24,9 +24,13 @@ export default function CartItem({ item, isCheckingOut }) {
   return (
     <div className="cart-item card">
       <img 
-        src={item.image} 
+        src={item.image || item.imageUrl || 'https://via.placeholder.com/120x120?text=Sin+Imagen'} 
         alt={item.name}
         className="cart-item-image"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = 'https://via.placeholder.com/120x120?text=Sin+Imagen';
+        }}
       />
       
       <div className="cart-item-details">

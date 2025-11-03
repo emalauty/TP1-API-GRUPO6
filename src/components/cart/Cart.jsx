@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import './Cart.css';
 import { useCart } from '../../context/CartContext';
 import CartItem from './CartItem';
+import CheckoutModal from './CheckoutModal';
 
 export default function Cart() {
   const { items, totalAmount, totalItems, processCheckout } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [checkoutMessage, setCheckoutMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' o 'error'
+  const [showModal, setShowModal] = useState(false);
 
   // Formatear precio a pesos argentinos
   const formatPrice = (price) => {
@@ -17,19 +19,26 @@ export default function Cart() {
     }).format(price);
   };
 
-  // Manejar el proceso de checkout
-  const handleCheckout = async () => {
+  // Abrir modal de checkout
+  const handleOpenCheckout = () => {
+    setShowModal(true);
+    setCheckoutMessage('');
+  };
+
+  // Manejar la confirmación del pedido
+  const handleConfirmOrder = async (formData) => {
     setIsProcessing(true);
     setCheckoutMessage('');
     
-    const result = await processCheckout();
+    const result = await processCheckout(formData);
     
     setIsProcessing(false);
     setCheckoutMessage(result.message);
     setMessageType(result.success ? 'success' : 'error');
     
-    // Limpiar el mensaje después de 5 segundos
+    // Si fue exitoso, cerrar modal y mostrar mensaje
     if (result.success) {
+      setShowModal(false);
       setTimeout(() => {
         setCheckoutMessage('');
         setMessageType('');
@@ -84,12 +93,19 @@ export default function Cart() {
           <button 
             className="btn btn-primary" 
             disabled={items.length === 0 || isProcessing}
-            onClick={handleCheckout}
+            onClick={handleOpenCheckout}
           >
-            {isProcessing ? 'Procesando...' : 'Proceder al pago'}
+            Confirmar Pedido
           </button>
         </div>
       </div>
+
+      <CheckoutModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleConfirmOrder}
+        isProcessing={isProcessing}
+      />
     </div>
   );
 }
