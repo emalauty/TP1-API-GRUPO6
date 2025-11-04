@@ -169,20 +169,13 @@ export const CartProvider = ({ children }) => {
       }));
 
       // Crear pedido en el backend con los datos del formulario
+      // El backend se encarga de actualizar el stock automáticamente
       await orderService.createPedido({
         direccionEnvio: formData.direccionEnvio,
         telefonoContacto: formData.telefonoContacto || null,
         notas: formData.notas || null,
         items,
       });
-
-      // Actualizar el stock de cada producto en el carrito
-      const updatePromises = cartState.items.map(async (item) => {
-        const newStock = Math.max(0, item.stock - item.quantity);
-        await productService.updateProductStock(item.id, newStock);
-        return { productId: item.id, newStock };
-      });
-      await Promise.all(updatePromises);
 
       // Limpiar el carrito después de procesar el checkout
       clearCart();

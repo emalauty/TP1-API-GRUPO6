@@ -1,6 +1,7 @@
 // src/components/products/ProductCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * Card presentacional reutilizable:
@@ -8,7 +9,10 @@ import { Link } from 'react-router-dom';
  * - Respeta clases existentes (.product-card, .product-img, etc.) para no romper el diseño.
  */
 export default function ProductCard({ product, onAdd }) {
+    const { user, isAuthenticated } = useAuth();
+    const isAdmin = user?.role === 'ADMIN';
     const outOfStock = (product?.stock ?? 0) <= 0;
+    const canAddToCart = isAuthenticated && !isAdmin && !outOfStock;
 
     const formatPrice = (price) =>
         new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
@@ -51,15 +55,23 @@ export default function ProductCard({ product, onAdd }) {
             <Link to={`/products/${product.id}`} className="btn btn-secondary" aria-label={`Ver detalle de ${product.name}`}>
                 Ver detalle
             </Link>
-            <button
-                className={`btn ${outOfStock ? 'btn-disabled' : 'btn-primary'}`}
-                onClick={() => onAdd?.(product)}
-                disabled={outOfStock}
-                aria-disabled={outOfStock}
-                title={outOfStock ? 'No hay stock disponible' : 'Agregar al carrito'}
-            >
-                Agregar
-            </button>
+            {!isAdmin && (
+              <button
+                  className={`btn ${!canAddToCart ? 'btn-disabled' : 'btn-primary'}`}
+                  onClick={() => onAdd?.(product)}
+                  disabled={!canAddToCart}
+                  aria-disabled={!canAddToCart}
+                  title={
+                    !isAuthenticated 
+                      ? 'Debes iniciar sesión para agregar al carrito' 
+                      : outOfStock 
+                      ? 'No hay stock disponible' 
+                      : 'Agregar al carrito'
+                  }
+              >
+                  {!isAuthenticated ? 'Inicia sesión' : 'Agregar'}
+              </button>
+            )}
             </div>
         </div>
         </article>

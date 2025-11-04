@@ -14,7 +14,7 @@ export default function ProductSearch({ value, onChange }) {
             id="catalog-search"
             type="search"
             className="input"
-            placeholder="Buscar por nombre o descripción…"
+            placeholder="Buscar por nombre..."
             value={value}
             onChange={(e) => onChange(e.target.value)}
             aria-label="Buscar productos"

@@ -39,12 +39,14 @@ export default function Header() {
           </nav>
 
           <div className="header-actions">
-            <Link to="/cart" className="btn cart-btn">
-              🛒 Carrito
-              {totalItems > 0 && (
-                <span className="cart-badge">{totalItems}</span>
-              )}
-            </Link>
+            {isAuthenticated && !isAdmin && (
+              <Link to="/cart" className="btn cart-btn">
+                🛒 Carrito
+                {totalItems > 0 && (
+                  <span className="cart-badge">{totalItems}</span>
+                )}
+              </Link>
+            )}
             
             {isAuthenticated ? (
               <div className="user-menu">

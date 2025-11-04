@@ -135,7 +135,7 @@ export default function ProductManagement() {
                     />
                   </td>
                   <td className="product-name">{product.name}</td>
-                  <td>{product.category?.name || 'Sin categoría'}</td>
+                  <td>{product.category || 'Sin categoría'}</td>
                   <td className="product-price">{formatPrice(product.price)}</td>
                   <td>
                     <span className={`stock-badge ${product.stock < 10 ? 'low-stock' : ''}`}>

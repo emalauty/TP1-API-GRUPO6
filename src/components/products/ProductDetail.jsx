@@ -3,11 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import './ProductDetail.css';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -53,6 +56,14 @@ export default function ProductDetail() {
 
   return (
     <div className="product-detail container">
+      <button 
+        className="btn btn-back" 
+        onClick={() => navigate('/products')}
+        title="Volver a productos"
+      >
+        ← Volver a productos
+      </button>
+      
       <div className="product-detail-card">
         <div className="product-detail-image">
           <img 
@@ -74,39 +85,53 @@ export default function ProductDetail() {
           </p>
           <p className="product-detail-price">{formatPrice(product.price)}</p>
 
-          {isInCart(product.id) ? (
-            <div className="cart-actions">
-              <div className="quantity-control">
+          {!isAdmin && isAuthenticated && (
+            <>
+              {isInCart(product.id) ? (
+                <div className="cart-actions">
+                  <div className="quantity-control">
+                    <button
+                      className="btn btn-quantity"
+                      onClick={handleRemoveFromCart}
+                      disabled={getItemQuantity(product.id) <= 1}
+                    >
+                      -
+                    </button>
+                    <span className="quantity">{getItemQuantity(product.id)}</span>
+                    <button
+                      className="btn btn-quantity"
+                      onClick={handleAddToCart}
+                      disabled={getItemQuantity(product.id) >= product.stock}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div className="cart-info">
+                    <span>{getItemQuantity(product.id)} productos agregados</span>
+                    <button className="btn btn-primary" onClick={() => navigate('/cart')}>
+                      Ver carrito
+                    </button>
+                  </div>
+                </div>
+              ) : (
                 <button
-                  className="btn btn-quantity"
-                  onClick={handleRemoveFromCart}
-                  disabled={getItemQuantity(product.id) <= 1}
-                >
-                  -
-                </button>
-                <span className="quantity">{getItemQuantity(product.id)}</span>
-                <button
-                  className="btn btn-quantity"
+                  className={`btn ${product.stock === 0 ? 'btn-disabled' : 'btn-primary'}`}
                   onClick={handleAddToCart}
-                  disabled={getItemQuantity(product.id) >= product.stock}
+                  disabled={product.stock === 0}
                 >
-                  +
+                  {product.stock === 0 ? 'Sin Stock' : 'Agregar al Carrito'}
                 </button>
-              </div>
-              <div className="cart-info">
-                <span>{getItemQuantity(product.id)} productos agregados</span>
-                <button className="btn btn-primary" onClick={() => navigate('/cart')}>
-                  Ver carrito
-                </button>
-              </div>
-            </div>
-          ) : (
+              )}
+            </>
+          )}
+
+          {!isAuthenticated && (
             <button
-              className={`btn ${product.stock === 0 ? 'btn-disabled' : 'btn-primary'}`}
-              onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              className="btn btn-disabled"
+              disabled
+              title="Debes iniciar sesión para agregar al carrito"
             >
-              {product.stock === 0 ? 'Sin Stock' : 'Agregar al Carrito'}
+              Inicia sesión para comprar
             </button>
           )}
         </div>
